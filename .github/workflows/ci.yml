@@ -1,0 +1,63 @@
+name: Build, Test and Release
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "gcc:12"  # Official GCC image with compiler, make installed
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Release
+        run: |
+          cmake -S . -B build/release -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/release
+
+      - name: Build Debug and Run Tests
+        run: |
+          cmake -S . -B build/debug -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/debug
+          cd build/debug
+          ctest --output-on-failure
+
+# jobs:
+#   build-and-test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Install dependencies
+#         run: sudo apt-get update && sudo apt-get install -y cmake g++ make
+
+#       - name: Build Release
+#         run: |
+#           cmake -S . -B build/release -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+#           cmake --build build/release
+
+#       - name: Build Debug and Run Tests
+#         run: |
+#           cmake -S . -B build/debug -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+#           cmake --build build/debug
+#           cd build/debug
+#           ctest --output-on-failure
+
+#       - name: Package Release Artifact (if tests passed)
+#         if: success()
+#         run: |
+#           TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M")
+#           mkdir -p release_artifact
+#           cp ./exec/Release/my_app release_artifact/my_app-$TIMESTAMP
+#           tar czf release_$TIMESTAMP.tar.gz -C release_artifact .
+        
+#       - name: Upload Release Artifact
+#         if: success()
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: my_app_release
+#           path: release_*.tar.gz

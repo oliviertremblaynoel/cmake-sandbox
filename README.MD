@@ -1,2 +1,3 @@
 # ABOUT
-An environment to test cmake
+
+DevOps-style CMake C++ project template.
