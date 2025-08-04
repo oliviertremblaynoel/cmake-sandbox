@@ -1,5 +1,4 @@
 name: Build, Test and Release
-
 on:
   push:
     branches:
@@ -8,16 +7,14 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: "gcc:12"  # Official GCC image with compiler, make installed
+      image: "oliviertremblaynoel/cpp-builder:latest"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Build Release
         run: |
           cmake -S . -B build/release -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
           cmake --build build/release
-
       - name: Build Debug and Run Tests
         run: |
           cmake -S . -B build/debug -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
